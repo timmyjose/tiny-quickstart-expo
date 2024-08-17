@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { View, Text, StyleSheet} from 'react-native'
 
 export type SuccessProps = {
+  uniqueId: String
   serverUrl: string
 }
 
@@ -10,12 +11,15 @@ const Success = ({ route }: SuccessProps) => {
 
   const getBalance = useCallback(async () => {
     try {
-      const { serverUrl } = route.params
+      const { uniqueId, serverUrl } = route.params
       const res = await fetch(serverUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          client_user_id: uniqueId
+        })
       })
 
       const resJson = await res.json()

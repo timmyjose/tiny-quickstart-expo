@@ -4,6 +4,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { RootStackParamsList } from '../App'
 import { useCallback, useEffect, useState } from 'react'
 import { LinkExit, LinkIOSPresentationStyle, LinkLogLevel, LinkSuccess, create, dismissLink, open } from 'react-native-plaid-link-sdk'
+import  DeviceInfo from 'react-native-device-info'
 
 const ADDRESS = Platform.OS === 'android' ? '10.0.2.2' : 'localhost'
 const SERVER_URL = `http://${ADDRESS}:8080`
@@ -11,7 +12,19 @@ const SERVER_URL = `http://${ADDRESS}:8080`
 const LinkDemo = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamsList>>()
 
+  // In the actual app, thie would be the deposit address - a unique identifier
+  // for the current app instance
+  // const [uniqueId, setUniqueId] = useState<string>('')
   const [linkToken, setLinkToken] = useState<string | null>(null)
+
+  // useEffect(() => {
+  //   const fetchUniqueId = async () => {
+  //     const id = await DeviceInfo.getUniqueId()
+  //     console.log(`id = ${id}`)
+  //     setUniqueId(id)
+  //   }
+  //   fetchUniqueId()
+  // }, [])
 
   useEffect(() => {
     if (linkToken === null) {
@@ -24,7 +37,9 @@ const LinkDemo = () => {
 
   const createLinkToken = useCallback(async () => {
     const serverUrl = `${SERVER_URL}/api/create_link_token`
-    console.log('ADDRESS = ', ADDRESS)
+    console.log(`serverUrl = ${serverUrl}`)
+    const uniqueId = await DeviceInfo.getUniqueId()
+    console.log(`uniqueId = ${uniqueId}`)
 
     try {
       const res = await fetch(serverUrl, {
@@ -32,7 +47,10 @@ const LinkDemo = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ address: ADDRESS })
+        body: JSON.stringify({ 
+          client_user_id: uniqueId,
+          address: ADDRESS 
+        })
       })
 
     const resJson = await res.json()
@@ -54,14 +72,20 @@ const LinkDemo = () => {
       onSuccess: async (success: LinkSuccess) => {
         try {
           const serverUrl = `${SERVER_URL}/api/exchange_public_token`
+          const uniqueId = await DeviceInfo.getUniqueId()
+
           await fetch(serverUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ public_token: success.publicToken })
+            body: JSON.stringify({ 
+              client_user_id: uniqueId,
+               public_token: success.publicToken 
+            })
           })
           navigation.navigate('Success', {
+            uniqueId,
             serverUrl: `${SERVER_URL}/api/balance`
           })
         } catch (err: any) {
