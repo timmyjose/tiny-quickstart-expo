@@ -10,26 +10,28 @@ use actix_web::{web, App, HttpServer};
 use clap::Parser;
 use config::Config;
 use handlers::{balance, create_link_token, exchange_public_token};
-use plaid::PlaidClient;
+use plaid_sdk::PlaidClient;
 use std::sync::Arc;
 
-struct AppState {
+pub struct AppState {
     database_url: String,
     plaid_client: PlaidClient,
-    plaid_redirect_uri: String,
-    plaid_android_package_name: String,
 }
 
 pub fn create_server() -> eyre::Result<Server> {
     let config = Config::parse();
 
-    let plaid_client = PlaidClient::from_env();
+    let plaid_client = PlaidClient::new(
+        &config.plaid_client_id,
+        &config.plaid_secret,
+        &config.plaid_env.to_string(),
+        &config.plaid_redirect_uri,
+        &config.plaid_android_package_name,
+    );
 
     let app_data = Arc::new(AppState {
         database_url: config.database_url.clone(),
         plaid_client,
-        plaid_redirect_uri: config.plaid_redirect_uri.clone(),
-        plaid_android_package_name: config.plaid_android_package_name.clone(),
     });
 
     Ok(HttpServer::new(move || {

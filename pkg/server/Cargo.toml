@@ -13,7 +13,7 @@ dotenvy = { workspace = true }
 env_logger = { workspace = true}
 eyre = { workspace = true}
 log = { workspace = true}
-plaid = { workspace = true}
+plaid-sdk = { path = "../plaid-sdk" }
 serde = { workspace = true}
 serde_json = { workspace = true }
 thiserror = { workspace = true }

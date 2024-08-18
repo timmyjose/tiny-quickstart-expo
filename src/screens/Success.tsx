@@ -23,7 +23,11 @@ const Success = ({ route }: SuccessProps) => {
       })
 
       const resJson = await res.json()
-      setBalance(resJson)
+      if (resJson.failure) {
+        console.error(resJson.failure)
+      } else {
+        setBalance(resJson)
+      }
     } catch (err: any) {
       console.error(err)
     }

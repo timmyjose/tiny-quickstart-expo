@@ -54,7 +54,11 @@ const LinkDemo = () => {
       })
 
     const resJson = await res.json()
-    setLinkToken(resJson.link_token)
+    if (resJson.failure) {
+      console.error(resJson.failure)
+    } else {
+      setLinkToken(resJson.link_token)
+    }
     } catch (err: any) {
       console.error(err)
     }
@@ -80,7 +84,7 @@ const LinkDemo = () => {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({ 
-              client_user_id: uniqueId,
+               client_user_id: uniqueId,
                public_token: success.publicToken 
             })
           })
