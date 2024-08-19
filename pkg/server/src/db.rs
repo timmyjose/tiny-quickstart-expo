@@ -19,7 +19,6 @@ pub(crate) async fn get_client(id: &str, database_url: &str) -> eyre::Result<Cli
     use crate::schema::clients::dsl::*;
 
     let mut conn = establish_conection(database_url);
-
     let client = clients::table()
         .filter(client_user_id.eq(id))
         .first::<Client>(&mut conn)?;
@@ -31,8 +30,9 @@ pub(crate) async fn get_client(id: &str, database_url: &str) -> eyre::Result<Cli
 pub(crate) async fn insert_client(client_user_id: &str, database_url: &str) -> eyre::Result<usize> {
     debug!("Inserting client_user_id {}", client_user_id);
 
-    let mut conn = establish_conection(database_url);
+    // check if the row already exists, and if so, return
 
+    let mut conn = establish_conection(database_url);
     let new_client = NewClient {
         client_user_id: client_user_id,
         access_token: None,
@@ -54,7 +54,6 @@ pub(crate) async fn update_client(
     );
 
     let mut conn = establish_conection(database_url);
-
     Ok(
         diesel::update(clients::table.filter(clients::client_user_id.eq(id)))
             .set(clients::access_token.eq(token.to_string()))

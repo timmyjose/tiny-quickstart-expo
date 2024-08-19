@@ -23,7 +23,13 @@ export DATABASE_URL=<database-url>
 ```
 
 ```bash
- $ RUST_LOG=info cargo run --release -- --plaid-redirect-uri=<redirect-url-for-ios> --plaid-android-package-name=<android-package-name-for-android>
+ $ RUST_LOG=info cargo run --release --bin server -- \
+    --database-url <url> \
+    --plaid-env sandbox \
+    --plaid-client-id <client-id> \
+    --plaid-secret <secret> \
+    --plaid-redirect-uri <redirect-url-for-ios> \
+    --plaid-android-package-name <android-package-name-for-android>
 ```
 
 ### Start the app
