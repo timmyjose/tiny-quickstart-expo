@@ -5,6 +5,11 @@ use crate::{
         error::PlaidErrorResponse,
         items::{ItemPublicTokenExchangeRequest, ItemPublicTokenExchangeResponse},
         link::{LinkTokenCreateRequest, LinkTokenCreateResponse},
+        processor::{
+            ProcessorStripeBankAccountTokenCreateRequest,
+            ProcessorStripeBankAccountTokenCreateResponse, ProcessorTokenCreateRequest,
+            ProcessorTokenCreateResponse,
+        },
     },
     Either, PlaidResult,
 };
@@ -68,6 +73,27 @@ pub trait AccountsApi: PlaidApi<AccountsBalanceGetRequest, AccountsGetResponse> 
         &self,
         req: AccountsBalanceGetRequest,
     ) -> PlaidResult<Either<AccountsGetResponse, PlaidErrorResponse>>;
+}
+
+#[async_trait]
+pub trait ProcessorApi:
+    PlaidApi<ProcessorTokenCreateRequest, ProcessorTokenCreateResponse>
+{
+    async fn processor_token_create(
+        req: ProcessorTokenCreateRequest,
+    ) -> PlaidResult<Either<ProcessorTokenCreateResponse, PlaidErrorResponse>>;
+}
+
+#[async_trait]
+pub trait ProcessorStripeApi:
+    PlaidApi<
+    ProcessorStripeBankAccountTokenCreateRequest,
+    ProcessorStripeBankAccountTokenCreateResponse,
+>
+{
+    async fn processor_stripe_bank_account_token_create(
+        req: ProcessorStripeBankAccountTokenCreateRequest,
+    ) -> PlaidResult<Either<ProcessorStripeBankAccountTokenCreateResponse, PlaidErrorResponse>>;
 }
 
 #[async_trait]
